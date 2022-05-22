@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'signup.dart';
 
 class Login extends StatefulWidget {
@@ -20,8 +22,14 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
 
+  String email = "";
+  String password = "";
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("FriendFinity"),
@@ -43,15 +51,22 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    width: 350,
+                    width: screenWidth * 0.9,
                     padding: EdgeInsets.all(16.0),
                     child: TextFormField(
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter email';
+                        } else if (!value.contains('@')) {
+                          return "Not a valid email";
                         }
                         return null;
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          email = value;
+                        });
                       },
                       decoration: InputDecoration(
                         labelText: "Email",
@@ -66,7 +81,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   Container(
-                    width: 350,
+                    width: screenWidth * 0.9,
                     padding: EdgeInsets.all(16.0),
                     child: TextFormField(
                       // The validator receives the text that the user has entered.
@@ -75,6 +90,11 @@ class _LoginState extends State<Login> {
                           return 'Please enter password';
                         }
                         return null;
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          password = value;
+                        });
                       },
                       obscureText: true,
                       decoration: InputDecoration(
@@ -90,17 +110,36 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   SizedBox(
-                    width: 100,
+                    width: screenWidth * 0.4,
                     height: 40,
                     child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           // Validate returns true if the form is valid, or false otherwise.
                           if (_formKey.currentState!.validate()) {
                             // If the form is valid, display a snackbar. In the real world,
                             // you'd often call a server or save the information in a database.
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Processing Data')),
+                            final response = await http.post(
+                              Uri.parse(
+                                  "https://friend-finity-backend.herokuapp.com/users/login"),
+                              headers: <String, String>{
+                                'Content-Type':
+                                    'application/json; charset=UTF-8',
+                              },
+                              body: jsonEncode(<String, String>{
+                                'email': email.trim(),
+                                'password': password
+                              }),
                             );
+                            print(response.body);
+                            if (response.statusCode == 200) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Login Success")),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Login Error")),
+                              );
+                            }
                           }
                         },
                         child: const Text('Sign in'),

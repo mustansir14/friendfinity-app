@@ -38,6 +38,8 @@ dependencies:
   image_picker: ^0.8.5+3
   string_validator: ^0.3.0
   material_design_icons_flutter: ^5.0.6595
+  font_awesome_flutter: ^10.1.0
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

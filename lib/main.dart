@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'screens/screens.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'FriendFinity',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
           displayColor: Colors.white,
         ),
       ),
-      home: const Login(),
+      home: HomeScreen(),
     );
   }
 }

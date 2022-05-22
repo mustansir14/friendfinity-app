@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 import 'screens/screens.dart';
 
-
-
 void main() {
   runApp(const MyApp());
 }
@@ -36,7 +34,7 @@ class MyApp extends StatelessWidget {
           displayColor: Colors.white,
         ),
       ),
-      home: HomeScreen(),
+      home: Login(),
     );
   }
 }

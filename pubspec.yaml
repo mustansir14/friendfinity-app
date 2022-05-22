@@ -37,6 +37,7 @@ dependencies:
   country_picker: ^2.0.15
   image_picker: ^0.8.5+3
   string_validator: ^0.3.0
+  material_design_icons_flutter: ^5.0.6595
 
 dev_dependencies:
   flutter_test:

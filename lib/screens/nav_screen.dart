@@ -11,7 +11,9 @@ class NavScreen extends StatefulWidget {
 
 class _NavScreenState extends State<NavScreen> {
   final List<Widget> _screens = [
-    HomeScreen(),
+    HomeScreen(
+      userID: "61b76fef65c122622b2a8e83",
+    ),
     Scaffold(),
     Scaffold(),
     Scaffold(),
@@ -34,18 +36,18 @@ class _NavScreenState extends State<NavScreen> {
     return DefaultTabController(
       length: _icons.length,
       child: Scaffold(
-          body: IndexedStack(
-              index: _selectedIndex,
-              children: _screens,
-          ),
-          bottomNavigationBar: Padding( 
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
           child: CustomTabBar(
-              icons: _icons,
-              selectedIndex: _selectedIndex,
-              onTap: (index) => setState(() => _selectedIndex = index),
+            icons: _icons,
+            selectedIndex: _selectedIndex,
+            onTap: (index) => setState(() => _selectedIndex = index),
           ),
-      ),
+        ),
       ),
     );
   }

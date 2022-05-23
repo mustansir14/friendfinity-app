@@ -396,7 +396,8 @@ class _SignUpState extends State<SignUp> {
                                       content: Text("Sign up Success")),
                                 );
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => HomeScreen()));
+                                    builder: (context) => HomeScreen(
+                                        userID: "61b76fef65c122622b2a8e83")));
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

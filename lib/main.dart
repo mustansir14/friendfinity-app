@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
-import 'screens/screens.dart';
-
-
+import 'screens/profile_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,14 +27,20 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
         scaffoldBackgroundColor: Colors.grey.shade900,
         textTheme: const TextTheme(
-          bodyText1: TextStyle(),
-          bodyText2: TextStyle(),
+          bodyText1: TextStyle(color: Colors.white),
+          bodyText2: TextStyle(color: Colors.white),
         ).apply(
           bodyColor: Colors.white,
           displayColor: Colors.white,
         ),
       ),
+<<<<<<< HEAD
       home: NavScreen(),
+=======
+      home: Profile(
+        userID: "61b76fef65c122622b2a8e83",
+      ),
+>>>>>>> 2118e3ace4208340c62bf5be8304720f849c4211
     );
   }
 }

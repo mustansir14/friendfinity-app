@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup.dart';
+import 'screens/home_screen.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -135,9 +136,13 @@ class _LoginState extends State<Login> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("Login Success")),
                               );
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => HomeScreen()));
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Login Error")),
+                                const SnackBar(
+                                    content:
+                                        Text("Incorrect Username or Password")),
                               );
                             }
                           }

@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:string_validator/string_validator.dart';
 import 'dart:convert';
 import 'login.dart';
+import 'screens/home_screen.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -34,6 +35,7 @@ class _SignUpState extends State<SignUp> {
   String password = "";
   String city = "";
   String country = "";
+  String imageFileString = "";
 
   late File chosenImageFile; //variable for choosed file
   Image profileImage =
@@ -46,6 +48,8 @@ class _SignUpState extends State<SignUp> {
     setState(() {
       chosenImageFile = File(choosedimage!.path);
       profileImage = Image.file(chosenImageFile, fit: BoxFit.cover);
+      final bytes = chosenImageFile.readAsBytesSync();
+      imageFileString = "data:image/jpeg;base64," + base64Encode(bytes);
     });
   }
 
@@ -83,6 +87,12 @@ class _SignUpState extends State<SignUp> {
   //     //there is error during converting file image to base64 encoding.
   //   }
   // }
+
+  String getGenderLetter(String gender) {
+    if (gender == "Male") return "m";
+    if (gender == "Female") return "f";
+    return "o";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,6 +201,11 @@ class _SignUpState extends State<SignUp> {
                             firstDate: DateTime(1900),
                             lastDate: DateTime(2010),
                             fieldLabelText: "Date of Birth",
+                            onDateSubmitted: (date) {
+                              setState(() {
+                                dob = date;
+                              });
+                            },
                             onDateSaved: (date) {
                               setState(() {
                                 dob = date;
@@ -304,6 +319,11 @@ class _SignUpState extends State<SignUp> {
                           padding: const EdgeInsets.all(16.0),
                           child: TextFormField(
                             // The validator receives the text that the user has entered.
+                            onChanged: (value) {
+                              setState(() {
+                                city = value;
+                              });
+                            },
                             decoration: InputDecoration(
                               labelText: "City",
                               fillColor: Colors.white,
@@ -321,6 +341,11 @@ class _SignUpState extends State<SignUp> {
                           padding: EdgeInsets.all(16.0),
                           child: TextFormField(
                             // The validator receives the text that the user has entered.
+                            onChanged: (value) {
+                              setState(() {
+                                country = value;
+                              });
+                            },
                             decoration: InputDecoration(
                               labelText: "Country",
                               fillColor: Colors.white,
@@ -358,18 +383,24 @@ class _SignUpState extends State<SignUp> {
                                   'lastName': lastName,
                                   'email': email.trim(),
                                   'password': password,
-                                  'gender': gender
+                                  'gender': getGenderLetter(gender),
+                                  'dateOfBirth': dob.toString(),
+                                  'city': city,
+                                  'country': country,
+                                  'profilePicURL': imageFileString
                                 }),
                               );
-                              print(response.body);
-                              if (response.statusCode == 200) {
+                              if (response.statusCode == 201) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text("Login Success")),
+                                      content: Text("Sign up Success")),
                                 );
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => HomeScreen()));
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Login Error")),
+                                  const SnackBar(
+                                      content: Text("Sign up Error")),
                                 );
                               }
                             }

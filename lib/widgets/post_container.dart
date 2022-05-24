@@ -7,14 +7,14 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../utils/timeAgo.dart';
+import '../screens/profile_screen.dart';
 
 class PostContainer extends StatefulWidget {
   final post;
+  final currentUser;
 
-  const PostContainer({
-    Key? key,
-    required this.post,
-  }) : super(key: key);
+  const PostContainer({Key? key, required this.post, required this.currentUser})
+      : super(key: key);
 
   @override
   State<PostContainer> createState() => _PostContainerState();
@@ -24,6 +24,7 @@ class _PostContainerState extends State<PostContainer> {
   var user;
   var likes;
   var comments;
+  bool isLiked = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -60,6 +61,30 @@ class _PostContainerState extends State<PostContainer> {
     setState(() {
       comments = fetchedComments;
     });
+  }
+
+  onLiked(postID) async {
+    if (!isLiked) {
+      var like = <String, String>{
+        'userID': widget.currentUser['_id'],
+        'postID': widget.post['_id']
+      };
+      setState(() {
+        isLiked = true;
+        if (likes != null) {
+          likes.add(like);
+        }
+      });
+      var response = await http.post(
+          Uri.parse("https://friend-finity-backend.herokuapp.com/postLikes/"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(like));
+      if (response.statusCode == 201) {
+        setState(() {});
+      }
+    }
   }
 
   @override
@@ -99,6 +124,8 @@ class _PostContainerState extends State<PostContainer> {
               post: widget.post,
               likes: likes,
               comments: comments,
+              isLiked: isLiked,
+              onLiked: onLiked,
             ),
           ),
         ],
@@ -118,19 +145,37 @@ class _PostHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ProfileAvatar(
-            imageUrl: user != null
-                ? user['profilePicURL']
-                : "https://blogtimenow.com/wp-content/uploads/2014/06/hide-facebook-profile-picture-notification.jpg"),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => Profile(
+                      userID: user['_id'],
+                    )));
+          },
+          child: ProfileAvatar(
+              imageUrl: user != null
+                  ? user['profilePicURL']
+                  : "https://blogtimenow.com/wp-content/uploads/2014/06/hide-facebook-profile-picture-notification.jpg"),
+        ),
         const SizedBox(width: 8.0),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                user != null ? user['firstName'] + ' ' + user['lastName'] : "",
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Profile(
+                            userID: user['_id'],
+                          )));
+                },
+                child: Text(
+                  user != null
+                      ? user['firstName'] + ' ' + user['lastName']
+                      : "",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               Row(
@@ -162,12 +207,16 @@ class _PostStats extends StatelessWidget {
   final post;
   final likes;
   final comments;
+  final isLiked;
+  final onLiked;
 
   const _PostStats({
     Key? key,
     required this.post,
     required this.likes,
     required this.comments,
+    required this.isLiked,
+    required this.onLiked,
     // required this.shares,
   }) : super(key: key);
 
@@ -211,11 +260,11 @@ class _PostStats extends StatelessWidget {
             _PostButton(
               icon: Icon(
                 MdiIcons.thumbUpOutline,
-                color: Colors.grey[600],
+                color: isLiked ? Colors.purple : Colors.grey[600],
                 size: 20.0,
               ),
               label: 'Like',
-              onTap: () => print('Like'),
+              onTap: () => {onLiked(post['_id'])},
             ),
             _PostButton(
               icon: Icon(

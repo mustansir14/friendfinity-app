@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup.dart';
 import 'screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -55,6 +56,7 @@ class _LoginState extends State<Login> {
                     width: screenWidth * 0.9,
                     padding: EdgeInsets.all(16.0),
                     child: TextFormField(
+                      key: Key('email'),
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -85,6 +87,7 @@ class _LoginState extends State<Login> {
                     width: screenWidth * 0.9,
                     padding: EdgeInsets.all(16.0),
                     child: TextFormField(
+                      key: Key('password'),
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -114,6 +117,7 @@ class _LoginState extends State<Login> {
                     width: screenWidth * 0.4,
                     height: 40,
                     child: ElevatedButton(
+                        key: Key('submit'),
                         onPressed: () async {
                           // Validate returns true if the form is valid, or false otherwise.
                           if (_formKey.currentState!.validate()) {
@@ -133,12 +137,17 @@ class _LoginState extends State<Login> {
                             );
                             print(response.body);
                             if (response.statusCode == 200) {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              var userID =
+                                  jsonDecode(response.body)['user']["_id"];
+                              prefs.setString("userID", userID);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("Login Success")),
                               );
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => HomeScreen(
-                                        userID: "61b76fef65c122622b2a8e83",
+                                        userID: userID,
                                       )));
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

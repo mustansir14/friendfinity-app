@@ -6,6 +6,9 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../utils/timeAgo.dart';
+import 'profile_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../login.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userID;
@@ -42,6 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  addPost(post) {
+    setState(() {
+      posts.insert(0, post);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,26 +76,54 @@ class _HomeScreenState extends State<HomeScreen> {
                 iconSize: 30.0,
                 onPressed: () => print('Search'),
               ),
-              CircleButton(
-                icon: MdiIcons.facebookMessenger,
-                iconSize: 30.0,
-                onPressed: () => print('Messenger'),
-              ),
+              Padding(
+                padding: EdgeInsets.only(top: 6.0),
+                child: PopupMenuButton(
+                    onSelected: (value) async {
+                      if (value == "Profile") {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Profile(
+                                  userID: widget.userID,
+                                )));
+                      } else {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        prefs.remove("userID");
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => Login()),
+                            (route) => false);
+                      }
+                    },
+                    child: ProfileAvatar(
+                      imageUrl: currentUser != null
+                          ? currentUser['profilePicURL']
+                          : 'https://blogtimenow.com/wp-content/uploads/2014/06/hide-facebook-profile-picture-notification.jpg',
+                      radius: 22.0,
+                    ),
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                          const PopupMenuItem(
+                            value: "Profile",
+                            child: Text('Profile'),
+                          ),
+                          const PopupMenuItem(
+                            value: "Logout",
+                            child: Text('Logout'),
+                          ),
+                        ]),
+              )
             ],
           ),
           SliverToBoxAdapter(
-            child: CreatePostContainer(currentUser: currentUser),
+            child:
+                CreatePostContainer(currentUser: currentUser, addPost: addPost),
           ),
-          // SliverPadding(
-          //   padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
-          //   sliver: SliverToBoxAdapter(
-          //     child: Rooms(onlineUsers: onlineUsers),
-          //   ),
-          // ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return PostContainer(post: posts[index]);
+                return PostContainer(
+                  post: posts[index],
+                  currentUser: currentUser,
+                );
               },
               childCount: posts.length,
             ),

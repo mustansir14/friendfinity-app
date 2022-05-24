@@ -7,6 +7,7 @@ import 'package:string_validator/string_validator.dart';
 import 'dart:convert';
 import 'login.dart';
 import 'screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -123,6 +124,7 @@ class _SignUpState extends State<SignUp> {
                                 padding: EdgeInsets.all(16.0),
                                 child: TextFormField(
                                   // The validator receives the text that the user has entered.
+                                  key: Key('fname'),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter First Name';
@@ -152,6 +154,7 @@ class _SignUpState extends State<SignUp> {
                                 padding: EdgeInsets.all(16.0),
                                 child: TextFormField(
                                   // The validator receives the text that the user has entered.
+                                  key: Key('lname'),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter Last Name';
@@ -196,6 +199,7 @@ class _SignUpState extends State<SignUp> {
                           margin: const EdgeInsets.all(16.0),
                           padding: const EdgeInsets.only(left: 10.0),
                           child: InputDatePickerFormField(
+                            key: Key('dob'),
                             // The validator receives the text that the user has entered.
                             initialDate: dob,
                             firstDate: DateTime(1900),
@@ -223,6 +227,7 @@ class _SignUpState extends State<SignUp> {
                           margin: const EdgeInsets.all(16.0),
                           padding: const EdgeInsets.only(left: 10.0),
                           child: DropdownButton(
+                            key: Key('gender'),
                             // The validator receives the text that the user has entered.
                             value: gender,
                             items: <String>["Male", "Female", "Other"]
@@ -250,6 +255,7 @@ class _SignUpState extends State<SignUp> {
                       width: screenWidth,
                       padding: EdgeInsets.all(16.0),
                       child: TextFormField(
+                        key: Key('email'),
                         // The validator receives the text that the user has entered.
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -281,6 +287,7 @@ class _SignUpState extends State<SignUp> {
                       width: screenWidth,
                       padding: EdgeInsets.all(16.0),
                       child: TextFormField(
+                        key: Key('password'),
                         // The validator receives the text that the user has entered.
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -318,6 +325,7 @@ class _SignUpState extends State<SignUp> {
                           width: screenWidth * 0.4,
                           padding: const EdgeInsets.all(16.0),
                           child: TextFormField(
+                            key: Key('city'),
                             // The validator receives the text that the user has entered.
                             onChanged: (value) {
                               setState(() {
@@ -340,6 +348,7 @@ class _SignUpState extends State<SignUp> {
                           width: screenWidth * 0.6,
                           padding: EdgeInsets.all(16.0),
                           child: TextFormField(
+                            key: Key('country'),
                             // The validator receives the text that the user has entered.
                             onChanged: (value) {
                               setState(() {
@@ -365,6 +374,7 @@ class _SignUpState extends State<SignUp> {
                       height: 40,
                       margin: EdgeInsets.only(top: 16.0),
                       child: ElevatedButton(
+                          key: Key('submit'),
                           onPressed: () async {
                             // Validate returns true if the form is valid, or false otherwise.
                             if (_formKey.currentState!.validate()) {
@@ -391,13 +401,18 @@ class _SignUpState extends State<SignUp> {
                                 }),
                               );
                               if (response.statusCode == 201) {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                var userID =
+                                    jsonDecode(response.body)['user']["_id"];
+                                prefs.setString("userID", userID);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text("Sign up Success")),
                                 );
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => HomeScreen(
-                                        userID: "61b76fef65c122622b2a8e83")));
+                                    builder: (context) =>
+                                        HomeScreen(userID: userID)));
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

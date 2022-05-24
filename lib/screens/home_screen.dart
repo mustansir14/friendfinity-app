@@ -71,11 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
             centerTitle: false,
             floating: true,
             actions: [
-              CircleButton(
-                icon: Icons.search,
-                iconSize: 30.0,
-                onPressed: () => print('Search'),
-              ),
+              // CircleButton(
+              //   icon: Icons.search,
+              //   iconSize: 30.0,
+              //   onPressed: () => print('Search'),
+              // ),
               Padding(
                 padding: EdgeInsets.only(top: 6.0),
                 child: PopupMenuButton(
